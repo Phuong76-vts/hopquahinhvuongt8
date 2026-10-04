@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xưởng hộp quà Halloween</title>
+<meta name="description" content="Học liệu số Toán 8 – Hình thoi và hình vuông. Tổ KHTN, THCS Võ Thị Sáu, Hải Phòng.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* ====== MÀU SẮC (đổi ở đây nếu muốn) ====== */
+:root{
+  color-scheme: dark;
+  --night:#1a1530;      /* nền trời đêm */
+  --panel:#241d40;      /* khung */
+  --panel2:#2e2651;
+  --line:#40366b;
+  --ink:#f3eefc;        /* chữ chính */
+  --muted:#b7acd6;      /* chữ phụ */
+  --orange:#ff8a2a;     /* bí ngô – màu nhấn */
+  --orange-soft:#ff8a2a33;
+  --lime:#9be15d;       /* đúng */
+  --lime-soft:#9be15d26;
+  --violet:#a78bfa;
+  --grid:#342b5c;
+  --grid-strong:#4a3f7d;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--night);color:var(--ink);font:400 15px/1.55 "Be Vietnam Pro",system-ui,sans-serif;padding:0 16px;
+  background-image:radial-gradient(circle at 85% -10%, #3b2a6b 0, transparent 45%);min-height:100vh}
+.wrap{max-width:1240px;margin:0 auto;padding-block:18px 40px;display:grid;gap:16px}
+h1,h2,h3{font-family:"Baloo 2","Be Vietnam Pro",sans-serif;margin:0;line-height:1.15;text-wrap:balance}
+button,select,input{font:inherit}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* Đầu trang */
+.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:12px;align-items:center}
+.brand svg{flex:none}
+.brand h1{font-size:clamp(24px,3.4vw,34px);font-weight:800}
+.brand h1 span{color:var(--orange)}
+.brand p{margin:0;color:var(--muted);font-size:13.5px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;background:var(--panel);padding:5px;border-radius:14px;border:1px solid var(--line)}
+.tabs button{background:none;border:0;color:var(--muted);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+.tabs button[aria-selected="true"]{background:var(--orange);color:#1a1530}
+
+/* Bố cục xưởng */
+.studio{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:16px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.boardbox{display:grid;gap:10px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--violet)}
+.btn.primary{background:var(--orange);color:#1a1530;border-color:var(--orange);font-weight:700}
+.toggle{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:13.5px;cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--orange);width:16px;height:16px}
+.spacer{flex:1}
+#board{width:100%;height:auto;display:block;touch-action:none;background:#150f28;border-radius:12px;border:1px solid var(--line)}
+.vtx{cursor:grab}
+.vtx:focus{outline:none}
+.vtx:focus-visible circle.hit{stroke:#fff;stroke-width:3}
+.hint{color:var(--muted);font-size:13px;margin:0}
+
+/* Kết quả nhận dạng */
+.verdict{display:grid;gap:4px;padding:14px 16px;border-radius:14px;background:var(--panel2);border:1px solid var(--line)}
+.verdict .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.verdict .name{font:800 30px/1.1 "Baloo 2",sans-serif}
+.verdict .why{color:var(--ink);font-size:14.5px}
+.verdict.thoi{border-color:var(--orange);background:linear-gradient(180deg,var(--orange-soft),var(--panel2))}
+.verdict.vuong{border-color:var(--lime);background:linear-gradient(180deg,var(--lime-soft),var(--panel2))}
+.verdict.thoi .name{color:var(--orange)}
+.verdict.vuong .name{color:var(--lime)}
+
+.side{display:grid;gap:14px}
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.ptabs button{white-space:nowrap;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 10px;cursor:pointer;font-weight:600}
+.ptabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--orange)}
+.pane{display:grid;gap:12px;padding-top:12px}
+
+table.m{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14.5px}
+table.m th{text-align:left;color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;padding:6px 4px;border-bottom:1px solid var(--line)}
+table.m td{padding:6px 4px;border-bottom:1px dashed var(--line)}
+table.m td.v{text-align:right;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+h3{font-size:18px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px}
+.checks li{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;color:var(--muted)}
+.checks li .ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
+.checks li.ok{color:var(--ink)}
+.checks li.ok .ic{background:var(--lime);border-color:var(--lime);color:#14311a}
+
+/* Nhiệm vụ */
+.missions{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.mission{display:grid;grid-template-columns:36px 1fr;gap:10px;padding:12px;border-radius:12px;background:var(--panel2);border:1px solid var(--line)}
+.mission .n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:800 17px "Baloo 2",sans-serif;background:var(--night);border:2px solid var(--line)}
+.mission.done{border-color:var(--lime)}
+.mission.done .n{background:var(--lime);border-color:var(--lime);color:#14311a}
+.mission.active{border-color:var(--orange)}
+.mission p{margin:0}
+.mission details{margin-top:4px;color:var(--muted);font-size:13.5px}
+.mission summary{cursor:pointer;color:var(--violet)}
+.progress{display:flex;align-items:center;gap:10px}
+.bar{flex:1;height:10px;background:var(--panel2);border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--lime);width:0;transition:width .3s}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--lime);color:#14311a;padding:10px 18px;border-radius:999px;font-weight:700;box-shadow:0 8px 30px #0008;z-index:20}
+
+/* Hộp quà */
+.boxlayout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start}
+.netwrap{background:#fffaf2;border-radius:14px;padding:10px;overflow:auto}
+#net{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field output{color:var(--orange);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--orange)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--orange);color:#1a1530;border-color:var(--orange);font-weight:700}
+.calc{display:grid;gap:6px;font-variant-numeric:tabular-nums}
+.calc div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.calc div span:first-child{color:var(--muted)}
+.calc div b{text-align:right}
+.empty{padding:28px;text-align:center;display:grid;gap:12px;justify-items:center}
+.note{font-size:13px;color:var(--muted);margin:0}
+
+/* Hướng dẫn */
+.guide{display:grid;gap:14px;max-width:880px}
+.guide h2{font-size:24px}
+.guide h3{margin-top:6px}
+.guide ol,.guide ul{margin:0;padding-left:22px;display:grid;gap:6px}
+.guide p{margin:0}
+
+footer{color:var(--muted);font-size:12.5px;text-align:center}
+
+@media (max-width:900px){
+  .studio,.boxlayout{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .two{grid-template-columns:1fr}
+  .verdict .name{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* In mẫu hộp: chỉ in phần khai triển */
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  body{background:#fff!important;padding:0}
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{position:absolute;left:0;top:0;padding:0;background:#fff}
+  #net{width:var(--pw);height:var(--ph)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">
+    <!-- Biểu tượng bí ngô tự vẽ -->
+    <svg width="54" height="54" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M32 14c3-6 8-8 11-7-3 2-5 5-6 9" fill="none" stroke="#6bbf3f" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="20" cy="38" rx="14" ry="18" fill="#e8741a"/><ellipse cx="44" cy="38" rx="14" ry="18" fill="#e8741a"/>
+      <ellipse cx="32" cy="38" rx="14" ry="20" fill="#ff8a2a"/>
+      <path d="M22 32l6 4-7 2zM42 32l-6 4 7 2zM22 46q10 8 20 0l-4 1-2-3-3 3-2-3-3 3-2-3z" fill="#1a1530"/>
+    </svg>
+    <div>
+      <h1>Xưởng thiết kế <span>hộp quà Halloween</span></h1>
+      <p>Toán 8 · Hình thoi và hình vuông · Kỹ sư nhí và đêm hội Hình thoi – Hình vuông</p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Chọn khu vực">
+    <button role="tab" id="tab-xuong" aria-selected="true" data-view="xuong">1. Xưởng khám phá</button>
+    <button role="tab" id="tab-hop" aria-selected="false" data-view="hop">2. Thiết kế hộp quà</button>
+    <button role="tab" id="tab-gv" aria-selected="false" data-view="gv">Hướng dẫn</button>
+  </nav>
+</header>
+
+<!-- ============ 1. XƯỞNG KHÁM PHÁ ============ -->
+<section id="view-xuong" class="studio">
+  <div class="card boardbox">
+    <div class="toolbar">
+      <button class="btn" id="pRhombus">Hình thoi mẫu</button>
+      <button class="btn" id="pSquare">Hình vuông mẫu</button>
+      <button class="btn" id="pRandom">Tứ giác bất kì</button>
+      <span class="spacer"></span>
+      <label class="toggle"><input type="checkbox" id="tDiag" checked> Đường chéo</label>
+      <label class="toggle"><input type="checkbox" id="tLen" checked> Độ dài cạnh</label>
+      <label class="toggle"><input type="checkbox" id="tAng"> Số đo góc</label>
+    </div>
+    <svg id="board" role="application" aria-label="Lưới ô vuông, kéo 4 đỉnh A, B, C, D để tạo tứ giác"></svg>
+    <p class="hint">Kéo các đỉnh A, B, C, D (mỗi ô vuông = 1 cm). Trên máy tính: bấm Tab để chọn đỉnh rồi dùng phím mũi tên để di chuyển.</p>
+  </div>
+
+  <div class="side">
+    <div class="verdict" id="verdict" aria-live="polite">
+      <span class="lbl">ABCD là</span>
+      <span class="name" id="vName">…</span>
+      <span class="why" id="vWhy"></span>
+    </div>
+
+    <div class="card">
+      <div class="ptabs" role="tablist" aria-label="Bảng thông tin">
+        <button role="tab" aria-selected="true" data-pane="so">Số đo</button>
+        <button role="tab" aria-selected="false" data-pane="dh">Dấu hiệu nhận biết</button>
+        <button role="tab" aria-selected="false" data-pane="nv">Nhiệm vụ <span id="nvCount">0/6</span></button>
+      </div>
+
+      <div class="pane" id="pane-so">
+        <table class="m" aria-label="Độ dài cạnh">
+          <thead><tr><th>Cạnh</th><th style="text-align:right">Độ dài (cm)</th><th>Góc</th><th style="text-align:right">Số đo</th></tr></thead>
+          <tbody id="tbSides"></tbody>
+        </table>
+        <table class="m" aria-label="Đường chéo">
+          <thead><tr><th>Đường chéo</th><th style="text-align:right">Kết quả</th></tr></thead>
+          <tbody id="tbDiag"></tbody>
+        </table>
+        <ul class="checks" id="props"></ul>
+      </div>
+
+      <div class="pane" id="pane-dh" hidden>
+        <div>
+          <h3>Dấu hiệu nhận biết hình thoi</h3>
+          <ul class="checks" id="dhThoi" style="margin-top:8px"></ul>
+        </div>
+        <div>
+          <h3>Dấu hiệu nhận biết hình vuông</h3>
+          <ul class="checks" id="dhVuong" style="margin-top:8px"></ul>
+        </div>
+        <p class="note">Dấu ✓ sáng lên khi hình em vẽ thỏa mãn dấu hiệu đó. Chỉ cần 1 dấu hiệu đúng là đủ để kết luận.</p>
+      </div>
+
+      <div class="pane" id="pane-nv" hidden>
+        <div class="progress"><div class="bar"><i id="nvBar"></i></div><b id="nvText">0/6</b></div>
+        <ol class="missions" id="missions"></ol>
+        <button class="btn" id="nvReset">Làm lại từ đầu</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. THIẾT KẾ HỘP QUÀ ============ -->
+<section id="view-hop" hidden>
+  <div class="card empty" id="boxEmpty" hidden>
+    <h2>Mặt đáy hộp quà phải là hình thoi hoặc hình vuông</h2>
+    <p class="note" id="boxEmptyWhy">Hình em đang vẽ chưa phải hình thoi. Hãy quay lại Xưởng để chỉnh các đỉnh.</p>
+    <button class="btn primary" id="backToStudio">Quay lại Xưởng khám phá</button>
+  </div>
+  <div class="boxlayout" id="boxMain">
+    <div class="card" style="display:grid;gap:10px">
+      <div class="toolbar">
+        <h2 style="font-size:22px">Mẫu khai triển hộp quà</h2>
+        <span class="spacer"></span>
+        <button class="btn primary" id="btnPrint" hidden>In mẫu hộp</button>
+        <button class="btn" id="btnSvg" hidden>Tải file SVG</button>
+      </div>
+      <div class="netwrap" id="printArea"><svg id="net" role="img" aria-label="Mẫu khai triển hộp quà hình lăng trụ đứng đáy hình thoi"></svg></div>
+      <div class="legend">
+        <span><svg width="28" height="6"><line x1="0" y1="3" x2="28" y2="3" stroke="#b7acd6" stroke-width="2"/></svg>Cắt theo nét liền</span>
+        <span><svg width="28" height="6"><line x1="0" y1="3" x2="28" y2="3" stroke="#b7acd6" stroke-width="2" stroke-dasharray="4 3"/></svg>Gấp theo nét đứt</span>
+        <span><svg width="16" height="12"><rect width="16" height="12" fill="#cfcfcf"/></svg>Phết keo</span>
+      </div>
+      <p class="note" id="printNote"></p>
+    </div>
+    <div class="side">
+      <div class="card" style="display:grid;gap:14px">
+        <div class="field">
+          <label for="hRange">Chiều cao hộp: <output id="hOut">4 cm</output></label>
+          <input type="range" id="hRange" min="2" max="10" step="1" value="4">
+        </div>
+        <div class="field">
+          <span style="font-weight:600;font-size:14px">Họa tiết mặt bên</span>
+          <div class="seg" id="motifSeg">
+            <button type="button" data-m="bingo" aria-pressed="true">Bí ngô</button>
+            <button type="button" data-m="doi" aria-pressed="false">Con dơi</button>
+            <button type="button" data-m="sao" aria-pressed="false">Ngôi sao</button>
+            <button type="button" data-m="tron" aria-pressed="false">Không</button>
+          </div>
+        </div>
+        <div class="field">
+          <span style="font-weight:600;font-size:14px">Màu giấy</span>
+          <div class="seg" id="colorSeg">
+            <button type="button" data-c="cam" aria-pressed="true">Cam</button>
+            <button type="button" data-c="tim" aria-pressed="false">Tím</button>
+            <button type="button" data-c="xanh" aria-pressed="false">Xanh rêu</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="display:grid;gap:10px">
+        <h3>Kỹ sư nhí tính toán</h3>
+        <div class="calc" id="calc"></div>
+        <p class="note">Hộp quà là hình lăng trụ đứng có đáy là hình thoi. Diện tích giấy chưa tính phần mép dán.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HƯỚNG DẪN ============ -->
+<section id="view-gv" class="card guide" hidden>
+  <h2>Hướng dẫn sử dụng</h2>
+  <p><b>Yêu cầu cần đạt (Toán 8):</b> Giải thích được tính chất về cạnh, góc, đường chéo của hình thoi, hình vuông; nhận biết được một tứ giác là hình thoi, hình vuông dựa vào dấu hiệu nhận biết; vận dụng để giải quyết vấn đề thực tiễn (thiết kế hộp quà).</p>
+  <h3>Cho học sinh</h3>
+  <ol>
+    <li><b>Xưởng khám phá:</b> kéo 4 đỉnh để tạo tứ giác. Quan sát bảng Số đo: cạnh, góc, đường chéo thay đổi thế nào? App cho biết ABCD là hình gì và vì sao.</li>
+    <li><b>Dấu hiệu nhận biết:</b> tìm cách làm sáng từng dấu hiệu của hình thoi, hình vuông.</li>
+    <li><b>Nhiệm vụ:</b> hoàn thành 6 nhiệm vụ, máy tự chấm.</li>
+    <li><b>Thiết kế hộp quà:</b> khi mặt đáy là hình thoi hoặc hình vuông, chọn chiều cao, họa tiết, tính diện tích giấy và thể tích hộp, in mẫu để cắt – gấp – dán.</li>
+  </ol>
+  <h3>Gợi ý tổ chức cho giáo viên</h3>
+  <ul>
+    <li><b>Khám phá (10 phút):</b> nhóm đôi dùng Hình thoi mẫu, kéo đỉnh và trả lời: hai đường chéo của hình thoi có đặc điểm gì? Góc giữa chúng luôn bằng bao nhiêu?</li>
+    <li><b>Hình thành kiến thức (10 phút):</b> dùng mục Dấu hiệu nhận biết; GV chốt 4 dấu hiệu hình thoi, 5 dấu hiệu hình vuông.</li>
+    <li><b>Luyện tập (10 phút):</b> học sinh làm mục Nhiệm vụ trên điện thoại, báo cáo số nhiệm vụ hoàn thành.</li>
+    <li><b>Vận dụng (về nhà / tiết STEM):</b> thiết kế và làm hộp quà Halloween; trình bày cách tính diện tích giấy cần dùng.</li>
+  </ul>
+  <h3>Câu hỏi gợi mở</h3>
+  <ul>
+    <li>Hình vuông có phải là hình thoi không? Vì sao app vẫn cho làm hộp khi đáy là hình vuông?</li>
+    <li>Có tạo được hình thoi có góc 60° trên lưới ô vuông không? Vì sao?</li>
+    <li>Giữ nguyên cạnh đáy, tăng chiều cao hộp gấp đôi thì thể tích thay đổi thế nào?</li>
+  </ul>
+  <h3>Thông tin học liệu</h3>
+  <p>Học liệu số môn Toán, Tổ Khoa học tự nhiên, Trường THCS Võ Thị Sáu, phường An Biên, Hải Phòng. Năm học 2026 – 2027. Tác giả: Ngô Thị Phương. Mã nguồn có sử dụng công cụ AI hỗ trợ lập trình; nội dung toán học đã được giáo viên kiểm tra. Hình vẽ, họa tiết do tác giả tự thiết kế. Web-app không thu thập thông tin cá nhân của học sinh; tiến độ nhiệm vụ chỉ lưu trên máy của người dùng.</p>
+</section>
+
+<footer>Tổ Khoa học tự nhiên · Trường THCS Võ Thị Sáu, Hải Phòng · Học liệu số năm học 2026 – 2027</footer>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* =========================================================
+   XƯỞNG THIẾT KẾ HỘP QUÀ HALLOWEEN – Toán 8
+   Toàn bộ tính toán dùng tọa độ nguyên trên lưới (1 ô = 1 cm)
+   để kiểm tra song song, vuông góc, bằng nhau một cách CHÍNH XÁC.
+   ========================================================= */
+const COLS = 14, ROWS = 10;        // kích thước lưới (ô)
+const U = 44;                      // 1 ô = 44 px trên màn hình
+const M = 26;                      // lề
+const NS = 'http://www.w3.org/2000/svg';
+const NAMES = ['A','B','C','D'];
+
+const PRESETS = {
+  rhombus: [[2,5],[6,3],[10,5],[6,7]],   // hình thoi cạnh 2√5, hai đường chéo 8 và 4
+  square:  [[5,3],[8,3],[8,6],[5,6]],    // hình vuông cạnh 3
+  random:  [[2,3],[9,1],[12,7],[4,8]]
+};
+let P = PRESETS.rhombus.map(p => p.slice());
+
+/* ---------- Toán học cơ bản ---------- */
+const sub = (a,b) => [a[0]-b[0], a[1]-b[1]];
+const dot = (u,v) => u[0]*v[0] + u[1]*v[1];
+const cross = (u,v) => u[0]*v[1] - u[1]*v[0];
+const len2 = u => dot(u,u);
+const fmt = (x, d=2) => (Math.round(x*10**d)/10**d).toLocaleString('vi-VN');
+
+// Viết độ dài dạng căn gọn: 18 -> "3√2"
+function sqrtText(n){
+  if (n === 0) return '0';
+  let out = 1, inside = n;
+  for (let k = Math.floor(Math.sqrt(n)); k > 1; k--){
+    if (inside % (k*k) === 0){ out *= k; inside /= (k*k); break; }
+  }
+  if (inside === 1) return String(out);
+  return (out === 1 ? '' : out) + '√' + inside;
+}
+function lenText(n){
+  const r = Math.sqrt(n);
+  return Number.isInteger(r) ? String(r) : `${sqrtText(n)} ≈ ${fmt(r)}`;
+}
+function angleDeg(u,v){
+  const c = dot(u,v) / Math.sqrt(len2(u)*len2(v));
+  return Math.acos(Math.max(-1, Math.min(1, c))) * 180 / Math.PI;
+}
+
+/* ---------- Phân tích tứ giác ---------- */
+function analyse(p){
+  const [A,B,C,D] = p;
+  const AB = sub(B,A), BC = sub(C,B), CD = sub(D,C), DA = sub(A,D);
+  const edges = [AB,BC,CD,DA];
+  const s2 = edges.map(len2);                         // bình phương các cạnh
+  const turns = edges.map((e,i) => cross(e, edges[(i+1)%4]));
+  const degenerate = turns.some(t => t === 0) || s2.some(x => x === 0);
+  const convex = !degenerate && (turns.every(t => t > 0) || turns.every(t => t < 0));
+
+  const AC = sub(C,A), BD = sub(D,B);
+  const par1 = cross(AB,CD) === 0, par2 = cross(BC,DA) === 0;
+  const isPara = convex && par1 && par2;
+  const allEq = s2.every(x => x === s2[0]);
+  const rightAt = [dot(DA,AB)===0, dot(AB,BC)===0, dot(BC,CD)===0, dot(CD,DA)===0]; // góc A, B, C, D
+  const anyRight = rightAt.some(Boolean);
+  const diagPerp = dot(AC,BD) === 0;
+  const diagEq = len2(AC) === len2(BD);
+  const midSame = (A[0]+C[0] === B[0]+D[0]) && (A[1]+C[1] === B[1]+D[1]);
+  // đường chéo AC là phân giác góc A  <=>  |AB| = |AD| với hình bình hành (kiểm tra trực tiếp bằng góc)
+  const bisA = Math.abs(angleDeg(AB, AC) - angleDeg(sub(D,A), AC)) < 1e-9;
+
+  const isRhombus = convex && allEq;
+  const isRect = isPara && anyRight;
+  const isSquare = isRhombus && anyRight;
+
+  const angles = [angleDeg(sub(D,A),AB), angleDeg(sub(A,B),BC), angleDeg(sub(B,C),CD), angleDeg(sub(C,D),DA)];
+
+  let name, why, cls = '';
+  if (degenerate){ name = 'Chưa là tứ giác'; why = 'Có 3 đỉnh thẳng hàng hoặc 2 đỉnh trùng nhau. Hãy kéo lại một đỉnh.'; }
+  else if (!convex){ name = 'Tứ giác không lồi'; why = 'Hai cạnh cắt nhau hoặc có góc lớn hơn 180°. Hãy đổi vị trí các đỉnh.'; }
+  else if (isSquare){ name = 'Hình vuông'; cls = 'vuong';
+    why = 'Vì ABCD là hình thoi (4 cạnh bằng nhau) và có một góc vuông.'; }
+  else if (isRhombus){ name = 'Hình thoi'; cls = 'thoi';
+    why = 'Vì ABCD có 4 cạnh bằng nhau: AB = BC = CD = DA = ' + lenText(s2[0]) + ' cm.'; }
+  else if (isRect){ name = 'Hình chữ nhật'; why = 'Hình bình hành có một góc vuông. Muốn thành hình vuông: làm cho 2 cạnh kề bằng nhau.'; }
+  else if (isPara){ name = 'Hình bình hành'; why = 'Các cạnh đối song song. Muốn thành hình thoi: làm cho 2 cạnh kề bằng nhau.'; }
+  else if (par1 || par2){
+    const isosceles = diagEq;
+    name = isosceles ? 'Hình thang cân' : (anyRight ? 'Hình thang vuông' : 'Hình thang');
+    why = 'Chỉ có một cặp cạnh đối song song (' + (par1 ? 'AB ∥ CD' : 'BC ∥ AD') + ').';
+  }
+  else { name = 'Tứ giác'; why = 'Không có cặp cạnh đối nào song song.'; }
+
+  return {A,B,C,D,AB,BC,CD,DA,AC,BD,s2,convex,degenerate,par1,par2,isPara,allEq,rightAt,anyRight,
+          diagPerp,diagEq,midSame,bisA,isRhombus,isRect,isSquare,angles,name,why,cls};
+}
+
+/* ---------- Vẽ bảng lưới ---------- */
+const board = document.getElementById('board');
+const W = COLS*U + 2*M, H = ROWS*U + 2*M;
+board.setAttribute('viewBox', `0 0 ${W} ${H}`);
+const X = x => M + x*U, Y = y => M + y*U;
+const el = (tag, attrs={}, parent) => {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+};
+
+// lưới cố định
+const gGrid = el('g', {}, board);
+for (let i = 0; i <= COLS; i++) el('line', {x1:X(i), y1:Y(0), x2:X(i), y2:Y(ROWS), stroke: i%5===0 ? 'var(--grid-strong)' : 'var(--grid)', 'stroke-width':1}, gGrid);
+for (let j = 0; j <= ROWS; j++) el('line', {x1:X(0), y1:Y(j), x2:X(COLS), y2:Y(j), stroke: j%5===0 ? 'var(--grid-strong)' : 'var(--grid)', 'stroke-width':1}, gGrid);
+const gShape = el('g', {}, board);
+const gVtx = el('g', {}, board);
+
+const tDiag = document.getElementById('tDiag'), tLen = document.getElementById('tLen'), tAng = document.getElementById('tAng');
+
+function drawShape(r){
+  gShape.innerHTML = '';
+  const pts = [r.A,r.B,r.C,r.D];
+  const fill = r.cls === 'thoi' ? '#ff8a2a' : r.cls === 'vuong' ? '#9be15d' : '#a78bfa';
+  el('polygon', {points: pts.map(p => X(p[0])+','+Y(p[1])).join(' '), fill, 'fill-opacity':0.18, stroke: fill, 'stroke-width':3.5, 'stroke-linejoin':'round'}, gShape);
+  const cx = pts.reduce((s,p)=>s+p[0],0)/4, cy = pts.reduce((s,p)=>s+p[1],0)/4;
+
+  // đường chéo + giao điểm O
+  if (tDiag.checked && r.convex){
+    el('line', {x1:X(r.A[0]),y1:Y(r.A[1]),x2:X(r.C[0]),y2:Y(r.C[1]),stroke:'#e9e3ff','stroke-width':1.6,'stroke-dasharray':'7 6'}, gShape);
+    el('line', {x1:X(r.B[0]),y1:Y(r.B[1]),x2:X(r.D[0]),y2:Y(r.D[1]),stroke:'#e9e3ff','stroke-width':1.6,'stroke-dasharray':'7 6'}, gShape);
+    // giao điểm của AC và BD
+    const d = cross(r.AC, r.BD);
+    if (d !== 0){
+      const t = cross(sub(r.B,r.A), r.BD) / d;
+      const O = [r.A[0] + t*r.AC[0], r.A[1] + t*r.AC[1]];
+      if (r.diagPerp){ // kí hiệu góc vuông tại O
+        const u = r.AC.map(v => v/Math.sqrt(len2(r.AC))), w = r.BD.map(v => v/Math.sqrt(len2(r.BD)));
+        const s = 0.35;
+        const p1 = [O[0]+u[0]*s, O[1]+u[1]*s], p2 = [p1[0]+w[0]*s, p1[1]+w[1]*s], p3 = [O[0]+w[0]*s, O[1]+w[1]*s];
+        el('path', {d:`M${X(p1[0])} ${Y(p1[1])} L${X(p2[0])} ${Y(p2[1])} L${X(p3[0])} ${Y(p3[1])}`, fill:'none', stroke:'#ff5d73','stroke-width':2}, gShape);
+      }
+      el('circle', {cx:X(O[0]), cy:Y(O[1]), r:4, fill:'#e9e3ff'}, gShape);
+      const lab = el('text', {x:X(O[0])+8, y:Y(O[1])-8, fill:'#e9e3ff','font-size':15,'font-weight':700,'font-family':'Be Vietnam Pro, sans-serif'}, gShape); lab.textContent = 'O';
+    }
+  }
+
+  // kí hiệu góc vuông tại đỉnh
+  pts.forEach((p,i) => {
+    if (!r.rightAt[i] || !r.convex) return;
+    const prev = pts[(i+3)%4], next = pts[(i+1)%4];
+    const u = sub(prev,p), w = sub(next,p);
+    const lu = Math.sqrt(len2(u)), lw = Math.sqrt(len2(w)), s = 0.4;
+    const a = [p[0]+u[0]/lu*s, p[1]+u[1]/lu*s], b = [a[0]+w[0]/lw*s, a[1]+w[1]/lw*s], c = [p[0]+w[0]/lw*s, p[1]+w[1]/lw*s];
+    el('path', {d:`M${X(a[0])} ${Y(a[1])} L${X(b[0])} ${Y(b[1])} L${X(c[0])} ${Y(c[1])}`, fill:'none', stroke:'#ff5d73','stroke-width':2}, gShape);
+  });
+
+  // gạch đánh dấu các cạnh bằng nhau
+  const groups = {};
+  r.s2.forEach((v,i) => (groups[v] = groups[v] || []).push(i));
+  let mark = 0;
+  Object.values(groups).filter(g => g.length >= 2).forEach(g => {
+    mark++;
+    g.forEach(i => {
+      const p = pts[i], q = pts[(i+1)%4];
+      const mx = (p[0]+q[0])/2, my = (p[1]+q[1])/2;
+      const dx = q[0]-p[0], dy = q[1]-p[1], L = Math.hypot(dx,dy);
+      const nx = -dy/L, ny = dx/L, tx = dx/L, ty = dy/L;
+      for (let k = 0; k < mark; k++){
+        const off = (k - (mark-1)/2) * 0.14;
+        const cx2 = mx + tx*off, cy2 = my + ty*off;
+        el('line', {x1:X(cx2-nx*0.16), y1:Y(cy2-ny*0.16), x2:X(cx2+nx*0.16), y2:Y(cy2+ny*0.16), stroke:'#fff','stroke-width':2.2}, gShape);
+      }
+    });
+  });
+
+  // nhãn độ dài cạnh
+  if (tLen.checked && !r.degenerate){
+    pts.forEach((p,i) => {
+      const q = pts[(i+1)%4];
+      const mx = (p[0]+q[0])/2, my = (p[1]+q[1])/2;
+      let ox = mx - cx, oy = my - cy; const L = Math.hypot(ox,oy) || 1;
+      const t = el('text', {x:X(mx + ox/L*0.55), y:Y(my + oy/L*0.55)+5, 'text-anchor':'middle', fill:'#ffd8b0','font-size':14,'font-weight':600,'font-family':'Be Vietnam Pro, sans-serif'}, gShape);
+      const r2 = r.s2[i], rt = Math.sqrt(r2);
+      t.textContent = Number.isInteger(rt) ? rt : sqrtText(r2);
+    });
+  }
+  // nhãn số đo góc
+  if (tAng.checked && r.convex){
+    pts.forEach((p,i) => {
+      let ox = cx - p[0], oy = cy - p[1]; const L = Math.hypot(ox,oy) || 1;
+      const t = el('text', {x:X(p[0] + ox/L*0.95), y:Y(p[1] + oy/L*0.95)+5, 'text-anchor':'middle', fill:'#c8f7a0','font-size':13,'font-weight':600,'font-family':'Be Vietnam Pro, sans-serif'}, gShape);
+      t.textContent = fmt(r.angles[i],1) + '°';
+    });
+  }
+  // cập nhật vị trí đỉnh và nhãn đỉnh
+  vtxEls.forEach((g,i) => {
+    const p = pts[i];
+    g.setAttribute('transform', `translate(${X(p[0])},${Y(p[1])})`);
+    let ox = p[0]-cx, oy = p[1]-cy; const L = Math.hypot(ox,oy) || 1;
+    const lab = g.querySelector('text');
+    lab.setAttribute('x', ox/L*26); lab.setAttribute('y', oy/L*26 + 6);
+    g.setAttribute('aria-label', `Đỉnh ${NAMES[i]} tại (${p[0]}; ${p[1]})`);
+  });
+}
+
+// tạo 4 đỉnh kéo được
+const vtxEls = NAMES.map((n,i) => {
+  const g = el('g', {class:'vtx', tabindex:0, role:'button'}, gVtx);
+  el('circle', {r:30, fill:'transparent', class:'hit'}, g);
+  el('circle', {r:9, fill:'#fff', stroke:'#1a1530', 'stroke-width':3}, g);
+  const t = el('text', {'text-anchor':'middle', fill:'#fff','font-size':20,'font-weight':800,'font-family':'Baloo 2, sans-serif'}, g);
+  t.textContent = n;
+  g.addEventListener('pointerdown', e => startDrag(e, i));
+  g.addEventListener('keydown', e => {
+    const d = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+    if (!d) return;
+    e.preventDefault();
+    moveTo(i, P[i][0]+d[0], P[i][1]+d[1]);
+  });
+  return g;
+});
+
+function moveTo(i, x, y){
+  x = Math.max(0, Math.min(COLS, x)); y = Math.max(0, Math.min(ROWS, y));
+  if (P.some((p,j) => j !== i && p[0] === x && p[1] === y)) return;  // không cho 2 đỉnh trùng nhau
+  if (P[i][0] === x && P[i][1] === y) return;
+  P[i] = [x,y];
+  update();
+}
+
+let dragging = -1;
+function toGrid(e){
+  const pt = board.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  const q = pt.matrixTransform(board.getScreenCTM().inverse());
+  return [Math.round((q.x - M)/U), Math.round((q.y - M)/U)];
+}
+function startDrag(e, i){
+  dragging = i;
+  vtxEls[i].style.cursor = 'grabbing';
+  board.setPointerCapture(e.pointerId);
+  e.preventDefault();
+}
+board.addEventListener('pointermove', e => {
+  if (dragging < 0) return;
+  const [x,y] = toGrid(e);
+  moveTo(dragging, x, y);
+});
+const endDrag = () => { if (dragging >= 0) vtxEls[dragging].style.cursor = ''; dragging = -1; };
+board.addEventListener('pointerup', endDrag);
+board.addEventListener('pointercancel', endDrag);
+
+/* ---------- Bảng số đo, dấu hiệu ---------- */
+const $ = id => document.getElementById(id);
+function checkList(ul, items){
+  ul.innerHTML = items.map(([ok, text]) => `<li class="${ok?'ok':''}"><span class="ic">${ok?'✓':'–'}</span><span>${text}</span></li>`).join('');
+}
+function renderInfo(r){
+  const v = $('verdict');
+  v.className = 'verdict ' + r.cls;
+  $('vName').textContent = r.name;
+  $('vWhy').textContent = r.why;
+
+  const sn = ['AB','BC','CD','DA'];
+  $('tbSides').innerHTML = sn.map((n,i) =>
+    `<tr><td>${n}</td><td class="v">${lenText(r.s2[i])}</td><td>${NAMES[i]}</td><td class="v">${r.convex ? (r.rightAt[i] ? '90°' : fmt(r.angles[i],1)+'°') : '–'}</td></tr>`).join('');
+  const dAng = r.convex ? angleDeg(r.AC, r.BD) : NaN;
+  $('tbDiag').innerHTML =
+    `<tr><td>AC</td><td class="v">${lenText(len2(r.AC))} cm</td></tr>
+     <tr><td>BD</td><td class="v">${lenText(len2(r.BD))} cm</td></tr>
+     <tr><td>Góc giữa AC và BD</td><td class="v">${r.convex ? (r.diagPerp ? '90°' : fmt(Math.min(dAng,180-dAng),1)+'°') : '–'}</td></tr>`;
+  checkList($('props'), [
+    [r.par1 && r.par2 && r.convex, 'Các cạnh đối song song'],
+    [r.convex && r.allEq, 'Bốn cạnh bằng nhau'],
+    [r.convex && r.midSame, 'Hai đường chéo cắt nhau tại trung điểm của mỗi đường'],
+    [r.convex && r.diagPerp, 'Hai đường chéo vuông góc với nhau'],
+    [r.convex && r.diagEq, 'Hai đường chéo bằng nhau']
+  ]);
+  const adjEq = r.s2[0] === r.s2[1];
+  checkList($('dhThoi'), [
+    [r.convex && r.allEq, 'Tứ giác có bốn cạnh bằng nhau'],
+    [r.isPara && adjEq, 'Hình bình hành có hai cạnh kề bằng nhau'],
+    [r.isPara && r.diagPerp, 'Hình bình hành có hai đường chéo vuông góc'],
+    [r.isPara && r.bisA, 'Hình bình hành có một đường chéo là đường phân giác của một góc']
+  ]);
+  checkList($('dhVuong'), [
+    [r.isRect && adjEq, 'Hình chữ nhật có hai cạnh kề bằng nhau'],
+    [r.isRect && r.diagPerp, 'Hình chữ nhật có hai đường chéo vuông góc'],
+    [r.isRect && r.bisA, 'Hình chữ nhật có một đường chéo là đường phân giác của một góc'],
+    [r.isRhombus && r.anyRight, 'Hình thoi có một góc vuông'],
+    [r.isRhombus && r.diagEq, 'Hình thoi có hai đường chéo bằng nhau']
+  ]);
+}
+
+/* ---------- Nhiệm vụ (máy tự chấm) ---------- */
+const MISSIONS = [
+  { text:'Kéo các đỉnh để tạo một hình thoi bất kì (không dùng nút Hình thoi mẫu).',
+    hint:'Bốn cạnh phải bằng nhau. Thử đặt A và C trên cùng một hàng, B và D trên cùng một cột.',
+    ok: r => r.isRhombus && !sameAs(PRESETS.rhombus) },
+  { text:'Tạo hình thoi có cạnh bằng 5 cm nhưng KHÔNG phải hình vuông.',
+    hint:'Mỗi cạnh là đường chéo của hình chữ nhật 3 ô × 4 ô (vì 3² + 4² = 5²). Hoặc dùng cạnh nằm ngang dài 5 ô.',
+    ok: r => r.isRhombus && !r.isSquare && r.s2[0] === 25 },
+  { text:'Tạo hình thoi có hai đường chéo dài 8 cm và 6 cm.',
+    hint:'Đặt A, C cách nhau 8 ô trên một hàng; B, D cách nhau 6 ô trên đường thẳng đứng đi qua trung điểm AC.',
+    ok: r => r.isRhombus && [len2(r.AC), len2(r.BD)].sort((a,b)=>a-b).join() === '36,64' },
+  { text:'Tạo hình vuông có cạnh 4 cm.',
+    hint:'Hình thoi có một góc vuông là hình vuông.',
+    ok: r => r.isSquare && r.s2[0] === 16 },
+  { text:'Tạo hình vuông có đường chéo dài 6 cm (hình vuông “đứng nghiêng”).',
+    hint:'Hai đường chéo của hình vuông bằng nhau và vuông góc: một đường chéo nằm ngang 6 ô, một đường thẳng đứng 6 ô.',
+    ok: r => r.isSquare && len2(r.AC) === 36 },
+  { text:'Tạo hình thoi có diện tích 12 cm².',
+    hint:'Diện tích hình thoi = nửa tích hai đường chéo. Cần hai đường chéo có tích bằng 24.',
+    ok: r => r.isRhombus && Math.abs(cross(r.AC, r.BD)) === 24 }
+];
+function sameAs(pre){ return pre.every((p,i) => p[0] === P[i][0] && p[1] === P[i][1]); }
+
+let done = new Array(MISSIONS.length).fill(false);
+try { const s = JSON.parse(localStorage.getItem('xhq-done') || 'null'); if (Array.isArray(s) && s.length === MISSIONS.length) done = s; } catch(e){}
+const saveDone = () => { try { localStorage.setItem('xhq-done', JSON.stringify(done)); } catch(e){} };
+
+$('missions').innerHTML = MISSIONS.map((m,i) =>
+  `<li class="mission" id="ms${i}"><span class="n">${i+1}</span><div><p>${m.text}</p><details><summary>Gợi ý</summary>${m.hint}</details></div></li>`).join('');
+
+function checkMissions(r){
+  let firstOpen = done.indexOf(false);
+  MISSIONS.forEach((m,i) => {
+    if (!done[i] && m.ok(r)){ done[i] = true; saveDone(); toast(`Hoàn thành nhiệm vụ ${i+1}!`); }
+  });
+  firstOpen = done.indexOf(false);
+  MISSIONS.forEach((m,i) => {
+    const li = $('ms'+i);
+    li.classList.toggle('done', done[i]);
+    li.classList.toggle('active', i === firstOpen);
+    li.querySelector('.n').textContent = done[i] ? '✓' : (i+1);
+  });
+  const n = done.filter(Boolean).length;
+  $('nvCount').textContent = `${n}/${MISSIONS.length}`;
+  $('nvText').textContent = `${n}/${MISSIONS.length}`;
+  $('nvBar').style.width = (n / MISSIONS.length * 100) + '%';
+}
+$('nvReset').addEventListener('click', () => { done = done.map(() => false); saveDone(); checkMissions(current); });
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2200);
+}
+
+/* ---------- Cập nhật toàn bộ ---------- */
+let current;
+function update(){
+  current = analyse(P);
+  drawShape(current);
+  renderInfo(current);
+  checkMissions(current);
+  if (!$('view-hop').hidden) renderBox();
+}
+
+$('pRhombus').onclick = () => { P = PRESETS.rhombus.map(p=>p.slice()); update(); };
+$('pSquare').onclick  = () => { P = PRESETS.square.map(p=>p.slice()); update(); };
+$('pRandom').onclick  = () => { P = PRESETS.random.map(p=>p.slice()); update(); };
+[tDiag,tLen,tAng].forEach(t => t.addEventListener('change', () => drawShape(current)));
+
+// tab trong bảng thông tin
+document.querySelectorAll('.ptabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.ptabs button').forEach(x => x.setAttribute('aria-selected', x === b));
+  ['so','dh','nv'].forEach(k => $('pane-'+k).hidden = (k !== b.dataset.pane));
+}));
+// tab chính
+function showView(v){
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.view === v));
+  ['xuong','hop','gv'].forEach(k => $('view-'+k).hidden = (k !== v));
+  if (v === 'hop') renderBox();
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+$('backToStudio').onclick = () => showView('xuong');
+
+/* =========================================================
+   THIẾT KẾ HỘP QUÀ: lăng trụ đứng đáy hình thoi
+   ========================================================= */
+let motif = 'bingo', paper = 'cam';
+const PAPER = { cam:{face:'#ffb36b', base:'#ff9a3c', ink:'#3a1d05'}, tim:{face:'#c3a6ff', base:'#a887f5', ink:'#241040'}, xanh:{face:'#a9c98a', base:'#8fb86c', ink:'#1d2b12'} };
+
+document.querySelectorAll('#motifSeg button').forEach(b => b.addEventListener('click', () => {
+  motif = b.dataset.m; document.querySelectorAll('#motifSeg button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderBox();
+}));
+document.querySelectorAll('#colorSeg button').forEach(b => b.addEventListener('click', () => {
+  paper = b.dataset.c; document.querySelectorAll('#colorSeg button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderBox();
+}));
+$('hRange').addEventListener('input', () => { $('hOut').textContent = $('hRange').value + ' cm'; renderBox(); });
+
+// họa tiết tự vẽ (tọa độ quanh gốc 0,0, kích thước khoảng 1 đơn vị)
+function motifSVG(kind, x, y, s, ink){
+  const T = `transform="translate(${x} ${y}) scale(${s})"`;
+  if (kind === 'bingo') return `<g ${T}><path d="M0 -0.42 q0.08 -0.16 0.2 -0.2" stroke="#3d7a22" stroke-width="0.07" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-0.2" cy="0" rx="0.26" ry="0.36" fill="#e8741a"/><ellipse cx="0.2" cy="0" rx="0.26" ry="0.36" fill="#e8741a"/><ellipse cx="0" cy="0" rx="0.26" ry="0.4" fill="#ff8a2a"/>
+    <path d="M-0.2 -0.08 l0.1 0.08 l-0.14 0.04z M0.2 -0.08 l-0.1 0.08 l0.14 0.04z M-0.2 0.14 q0.2 0.16 0.4 0 l-0.08 0.02 l-0.04 -0.05 l-0.06 0.05 l-0.04 -0.05 l-0.06 0.05 l-0.04 -0.05z" fill="${ink}"/></g>`;
+  if (kind === 'doi') return `<g ${T}><path d="M0 -0.12 c0.05 -0.1 0.08 -0.12 0.1 -0.06 c0.12 -0.12 0.3 -0.12 0.42 -0.02 c-0.08 0.02 -0.1 0.1 -0.1 0.16 c-0.06 -0.06 -0.14 -0.04 -0.16 0.04 c-0.06 -0.08 -0.16 -0.06 -0.26 0.08 c-0.1 -0.14 -0.2 -0.16 -0.26 -0.08 c-0.02 -0.08 -0.1 -0.1 -0.16 -0.04 c0 -0.06 -0.02 -0.14 -0.1 -0.16 c0.12 -0.1 0.3 -0.1 0.42 0.02 c0.02 -0.06 0.05 -0.04 0.1 0.06z" fill="${ink}"/></g>`;
+  if (kind === 'sao'){ let d=''; for(let k=0;k<10;k++){ const a=-Math.PI/2+k*Math.PI/5, rr=k%2?0.16:0.4; d+=(k?'L':'M')+(rr*Math.cos(a)).toFixed(3)+' '+(rr*Math.sin(a)).toFixed(3); } return `<g ${T}><path d="${d}Z" fill="#fff3b0" stroke="${ink}" stroke-width="0.03"/></g>`; }
+  return '';
+}
+
+function renderBox(){
+  const r = current;
+  const ok = r.isRhombus;
+  $('boxEmpty').hidden = ok; $('boxMain').hidden = !ok;
+  if (!ok){ $('boxEmptyWhy').textContent = `Hình em đang vẽ là “${r.name.toLowerCase()}”, chưa phải hình thoi. Hãy quay lại Xưởng để chỉnh các đỉnh.`; return; }
+
+  const h = +$('hRange').value;
+  const a2 = r.s2[0], a = Math.sqrt(a2);
+  const alpha = r.angles[0] * Math.PI / 180;            // góc A của đáy
+  const d1 = Math.sqrt(len2(r.AC)), d2 = Math.sqrt(len2(r.BD));
+  const Sd = Math.abs(cross(r.AC, r.BD)) / 2;           // = d1·d2/2
+  const Sxq = 4*a*h, Stp = Sxq + 2*Sd, V = Sd*h;
+  const c = Math.abs(Math.cos(alpha)), sa = Math.sin(alpha);
+  const tab = Math.min(1, a/3, h/3);                    // mép dán (cm)
+  const col = PAPER[paper];
+
+  // Hình học mẫu khai triển (đơn vị cm, trục y hướng xuống)
+  // 4 mặt bên là 4 hình chữ nhật a × h đặt liền nhau; nắp gắn cạnh trên, đáy gắn cạnh dưới của mặt bên thứ nhất
+  const top = [[0,0],[a,0],[a-a*c,-a*sa],[-a*c,-a*sa]];        // nắp và đáy phải lệch cùng một phía thì gấp mới khớp
+  const bot = [[0,h],[a,h],[a-a*c,h+a*sa],[-a*c,h+a*sa]];      // lệch sang trái để không chồng lên mép dán
+  const tuck = [top[3], top[2], [top[2][0]-tab*0.6, top[2][1]-tab], [top[3][0]+tab*0.6, top[3][1]-tab]]; // mép gài của nắp
+  const sideTab = [[4*a,0],[4*a+tab,tab*0.6],[4*a+tab,h-tab*0.6],[4*a,h]];                           // mép dán dọc
+  const tabsBottom = [1,2,3].map(i => [[i*a,h],[i*a+tab*0.6,h+tab],[(i+1)*a-tab*0.6,h+tab],[(i+1)*a,h]]); // mép dán đáy
+  const all = [...top, ...bot, ...tuck, ...sideTab, ...tabsBottom.flat()];
+  const minX = Math.min(...all.map(p=>p[0])) - 0.6, maxX = Math.max(...all.map(p=>p[0])) + 0.6;
+  const minY = Math.min(...all.map(p=>p[1])) - 0.6, maxY = Math.max(...all.map(p=>p[1])) + 0.6;
+  const vw = maxX - minX, vh = maxY - minY;
+  const P2 = p => p[0].toFixed(3)+' '+p[1].toFixed(3);
+  const poly = (pts, fill) => `<polygon points="${pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' ')}" fill="${fill}"/>`;
+  const line = pts => 'M' + pts.map(P2).join(' L');
+
+  let s = `<defs>`;
+  for (let i = 0; i < 4; i++) s += `<clipPath id="cl${i}"><rect x="${i*a}" y="0" width="${a}" height="${h}"/></clipPath>`;
+  s += `</defs>`;
+  // tô màu các phần
+  s += poly(sideTab, '#cfcfcf');
+  tabsBottom.forEach(t => s += poly(t, '#cfcfcf'));
+  s += poly(tuck, col.base);
+  s += poly(top, col.base);
+  s += poly(bot, col.base);
+  for (let i = 0; i < 4; i++){
+    s += `<rect x="${i*a}" y="0" width="${a}" height="${h}" fill="${col.face}"/>`;
+    if (motif !== 'tron'){
+      const size = Math.min(a, h) * 0.42;
+      let m = '';
+      const nx = Math.max(1, Math.round(a / (size*1.6))), ny = Math.max(1, Math.round(h / (size*1.6)));
+      for (let ix = 0; ix < nx; ix++) for (let iy = 0; iy < ny; iy++){
+        const cx = i*a + (ix+0.5)*a/nx + ((iy%2) ? a/nx*0.25 : 0), cy = (iy+0.5)*h/ny;
+        m += motifSVG(motif, cx, cy, size, col.ink);
+      }
+      s += `<g clip-path="url(#cl${i})">${m}</g>`;
+    }
+  }
+  // nét cắt (liền) – chỉ các cạnh ngoài cùng
+  const cut = [
+    line([[0,0],[0,h]]),
+    line([[a,0],[4*a,0]]),
+    line(sideTab),
+    ...tabsBottom.map(line),
+    line([top[1], top[2]]), line([top[3], top[0]]),
+    line([top[2], tuck[2], tuck[3], top[3]]),
+    line([bot[1], bot[2], bot[3], bot[0]])
+  ].join(' ');
+  // nét gấp (đứt)
+  const fold = [
+    line([[0,0],[a,0]]), line([[0,h],[4*a,h]]), line([top[2], top[3]]),
+    ...[1,2,3,4].map(i => line([[i*a,0],[i*a,h]]))
+  ].join(' ');
+  s += `<path d="${cut}" fill="none" stroke="#333" stroke-width="0.045" stroke-linejoin="round"/>`;
+  s += `<path d="${fold}" fill="none" stroke="#333" stroke-width="0.035" stroke-dasharray="0.2 0.13"/>`;
+  // chữ trên nắp / đáy
+  const cTop = [(top[0][0]+top[2][0])/2, (top[0][1]+top[2][1])/2], cBot = [(bot[0][0]+bot[2][0])/2, (bot[0][1]+bot[2][1])/2];
+  const fs = Math.max(0.32, Math.min(0.6, a*0.11));
+  s += `<text x="${cTop[0]}" y="${cTop[1]}" text-anchor="middle" font-size="${fs}" font-family="Be Vietnam Pro, sans-serif" font-weight="700" fill="${col.ink}">NẮP</text>`;
+  s += `<text x="${cBot[0]}" y="${cBot[1]}" text-anchor="middle" font-size="${fs}" font-family="Be Vietnam Pro, sans-serif" font-weight="700" fill="${col.ink}">ĐÁY</text>`;
+  s += `<text x="${cBot[0]}" y="${cBot[1]+fs*1.2}" text-anchor="middle" font-size="${fs*0.7}" font-family="Be Vietnam Pro, sans-serif" fill="${col.ink}">cạnh ${fmt(a)} cm</text>`;
+
+  const net = $('net');
+  net.setAttribute('viewBox', `${minX.toFixed(3)} ${minY.toFixed(3)} ${vw.toFixed(3)} ${vh.toFixed(3)}`);
+  net.innerHTML = s;
+
+  // tỉ lệ in: vừa khổ A4 ngang (vùng in 28 × 19 cm)
+  const k = Math.min(1, 28/vw, 19/vh);
+  document.documentElement.style.setProperty('--pw', (vw*k).toFixed(2)+'cm');
+  document.documentElement.style.setProperty('--ph', (vh*k).toFixed(2)+'cm');
+  const scaleTxt = k >= 0.999 ? 'đúng kích thước thật (1 ô = 1 cm)' : `thu nhỏ, 1 cm trên hình = ${fmt(k,2)} cm khi in`;
+  $('printNote').textContent = (canPrint
+    ? `Khi in (khổ A4 ngang, tỉ lệ 100%): ${scaleTxt}.`
+    : `Mở web-app trực tiếp trên trình duyệt để in mẫu hộp. Kích thước in: ${scaleTxt}.`) + ` Mẫu rộng ${fmt(vw)} cm × cao ${fmt(vh)} cm.`;
+
+  const row = (k, v) => `<div><span>${k}</span><b>${v}</b></div>`;
+  $('calc').innerHTML =
+    row('Cạnh đáy a', lenText(a2) + ' cm') +
+    row('Hai đường chéo đáy', `${lenText(len2(r.AC))} cm và ${lenText(len2(r.BD))} cm`) +
+    row('Các góc của đáy', r.rightAt[0] ? '4 góc vuông' : `${fmt(Math.min(r.angles[0],r.angles[1]),1)}° và ${fmt(Math.max(r.angles[0],r.angles[1]),1)}°`) +
+    row('Chu vi đáy = 4a', fmt(4*a) + ' cm') +
+    row('Diện tích đáy = d₁·d₂ : 2', fmt(Sd) + ' cm²') +
+    row('Diện tích xung quanh = 4a·h', fmt(Sxq) + ' cm²') +
+    row('Diện tích toàn phần', fmt(Stp) + ' cm²') +
+    row('Thể tích = S đáy · h', fmt(V) + ' cm³');
+}
+
+// In / tải file: chỉ bật khi web-app được mở trực tiếp (không nằm trong khung nhúng)
+let canPrint = false;
+try { canPrint = window.self === window.top; } catch(e){ canPrint = false; }
+$('btnPrint').hidden = !canPrint; $('btnSvg').hidden = !canPrint;
+$('btnPrint').onclick = () => window.print();
+$('btnSvg').onclick = () => {
+  const net = $('net');
+  const vb = net.getAttribute('viewBox').split(' ').map(Number);
+  const src = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(' ')}" width="${vb[2]}cm" height="${vb[3]}cm">${net.innerHTML}</svg>`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([src], {type:'image/svg+xml'}));
+  a.download = 'mau-hop-qua-halloween.svg';
+  document.body.appendChild(a); a.click(); a.remove();
+};
+
+update();
+</script>
+</body>
+</html>
